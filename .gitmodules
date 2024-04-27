@@ -1,0 +1,3 @@
+[submodule "web/odin-project/foundations/002_project_recipes"]
+	path = web/odin-project/foundations/002_project_recipes
+	url = https://github.com/nyxenn/odin_recipes
