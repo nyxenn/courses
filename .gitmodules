@@ -1,3 +1,6 @@
 [submodule "web/odin-project/foundations/002_project_recipes"]
 	path = web/odin-project/foundations/002_project_recipes
 	url = https://github.com/nyxenn/odin_recipes
+[submodule "web/odin-project/foundations/006_project_landing_page"]
+	path = web/odin-project/foundations/006_project_landing_page
+	url = https://github.com/nyxenn/odin_landing_page
