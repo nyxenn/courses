@@ -4,3 +4,6 @@
 [submodule "web/odin-project/foundations/006_project_landing_page"]
 	path = web/odin-project/foundations/006_project_landing_page
 	url = https://github.com/nyxenn/odin_landing_page
+[submodule "web/odin-project/foundations/007_project_rock_paper_scissors"]
+	path = web/odin-project/foundations/007_project_rock_paper_scissors
+	url = https://github.com/nyxenn/odin_rock_paper_scissors
