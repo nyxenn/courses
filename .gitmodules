@@ -7,3 +7,6 @@
 [submodule "web/odin-project/foundations/007_project_rock_paper_scissors"]
 	path = web/odin-project/foundations/007_project_rock_paper_scissors
 	url = https://github.com/nyxenn/odin_rock_paper_scissors
+[submodule "web/odin-project/foundations/009_project_etch_a_sketch"]
+	path = web/odin-project/foundations/009_project_etch_a_sketch
+	url = https://github.com/nyxenn/odin_etch_a_sketch
