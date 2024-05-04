@@ -10,3 +10,6 @@
 [submodule "web/odin-project/foundations/009_project_etch_a_sketch"]
 	path = web/odin-project/foundations/009_project_etch_a_sketch
 	url = https://github.com/nyxenn/odin_etch_a_sketch
+[submodule "web/odin-project/foundations/010_project_calculator"]
+	path = web/odin-project/foundations/010_project_calculator
+	url = https://github.com/nyxenn/odin_calculator
