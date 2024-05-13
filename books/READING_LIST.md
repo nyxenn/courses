@@ -10,13 +10,6 @@
     -   Eric Evans
 -   [ ] The Pragmatic Programmer: From Journeyman to Master
     -   Andrew Hunt, David Thomas
--   [ ] ## D
--   [ ] -
--   [ ] -
--   [ ] -
--   [ ] -
--   [ ] -
--   [ ] -
 
 ## Recreational
 
