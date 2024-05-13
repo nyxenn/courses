@@ -16,3 +16,6 @@
 [submodule "game_dev/brackeys_first_game"]
 	path = game_dev/brackeys_first_game
 	url = https://github.com/nyxennrepos/brackeys_first_game
+[submodule "web/0_to_prod_t3gg"]
+	path = web/0_to_prod_t3gg
+	url = https://github.com/nyxenn/t3gallery
