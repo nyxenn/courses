@@ -19,3 +19,6 @@
 [submodule "web/0_to_prod_t3gg"]
 	path = web/0_to_prod_t3gg
 	url = https://github.com/nyxenn/t3gallery
+[submodule "backend/boot_dev/bookbot"]
+	path = backend/boot_dev/bookbot
+	url = https://github.com/nyxenn/bookbot
