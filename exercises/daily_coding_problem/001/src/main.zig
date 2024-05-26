@@ -1,89 +1,75 @@
 const std = @import("std");
 
-const Args = struct { numbers: []i32, target: i32 };
-const ArgsError = error{ InvalidArgument, MissingArgument };
-const Result = struct { index_a: usize, index_b: usize };
+const JsonInput = struct {
+    inputs: []Input,
+};
+
+const Input = struct {
+    list: []const i32,
+    target: i32,
+    result: bool,
+};
 
 pub fn main() !void {
-    var allocator = std.heap.GeneralPurposeAllocator(.{}){};
-    defer allocator.deinit();
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    const allocator = arena.allocator();
 
-    var cli_args = try std.process.argsAlloc(allocator);
-    defer cli_args.deinit();
+    const json = try std.fs.cwd().readFileAlloc(allocator, "input.json", 25_000);
+    defer allocator.free(json);
 
-    const args: Args = process_args() catch |err| switch (err) {
-        ArgsError.MissingArgument => std.debug.print("Argument was not provided", .{}),
-        ArgsError.InvalidArgument => std.debug.print("Argument was not valid", .{}),
-    };
-    const result = process_args(args);
+    const parsed = try parse_json(json, &allocator);
 
-    if (result == null) {
-        return;
-    }
-}
-
-fn process_args(args: []const []const u8) ArgsError!Args {
-    var result: Args = Args{ .target = undefined, .numbers = undefined };
-    var i: usize = 0;
-
-    if (args.len % 2 != 0)
-        return ArgsError.MissingArgument;
-
-    while (i < args.len) : (i += 2) {
-        switch (args[i]) {
-            "-t", "--target" => result.target = try std.fmt.parseInt(i32, args[i + 1], 10),
-            "-l", "--list" => result.numbers = try std.fmt.parseInt(i32, args[i + 1], 10),
-            else => return ArgsError.InvalidArgument,
-        }
-    }
-
-    if (result.target == undefined or result.numbers == undefined)
-        return ArgsError.MissingArgument;
-
-    return result;
-}
-
-fn find(target: i32, numbers: []i32, allocator: *const std.mem.Allocator) ?Result {
-    var map = std.AutoHashMap(i32, usize).init(allocator.*);
-    defer map.deinit();
-
-    var result: ?Result = null;
-    for (numbers, 0..) |value, i| {
-        const entry = map.get(value);
-        if (entry != null) {
-            result = Result{ .index_a = entry.?, .index_b = i };
+    for (parsed.value.inputs) |value| {
+        const found = try check_list_for_sum(value.list, value.target, &allocator);
+        if (found != value.result) {
+            std.debug.print("Expected did not match result for target {d} in list {any}.\nExpected:{any}", .{ value.target, value.list, value.result });
             break;
         }
+        if (found) {
+            std.debug.print("Found possible sum of {d} in list {any}\n\n", .{ value.target, value.list });
+        } else {
+            std.debug.print("No combination found to get sum {d}\n\n", .{value.target});
+        }
+    }
+}
 
-        map.put(target - value, i) catch |err| switch (err) {
-            else => std.debug.print("leaky", .{}),
-        };
+fn parse_json(json: []const u8, allocator: *const std.mem.Allocator) !std.json.Parsed(JsonInput) {
+    var diagnostics = std.json.Diagnostics{};
+    errdefer std.debug.print("\n\n\n\nhuuuuuuuuuuuuuuu\n\n\n\n\n{}", .{diagnostics.getLine()});
+
+    // Remember to add diagnostics
+    var scanner = std.json.Scanner.initCompleteInput(allocator.*, json);
+    scanner.enableDiagnostics(&diagnostics);
+    defer scanner.deinit();
+
+    return try std.json.parseFromTokenSource(JsonInput, allocator.*, &scanner, .{});
+}
+
+fn check_list_for_sum(list: []const i32, k: i32, allocator: *const std.mem.Allocator) !bool {
+    var map = std.AutoHashMap(i32, i32).init(allocator.*);
+    defer map.deinit();
+
+    for (list) |v| {
+        if (map.get(v) != null) {
+            return true;
+        }
+
+        try map.put(k - v, v);
     }
 
-    return result;
+    return false;
 }
 
-test "parse args" {
-    const argv = [_][]const u8{
-        "program-name",
-        "-t",
-        "17",
-        "-l",
-        "[1, 7, 8, 10, 44, 9, 4, 3, 7, 54, 17]",
-    };
+test "checks list for sum" {
+    const allocator = std.testing.allocator;
 
-    var numbers = [_]i32{ 1, 7, 8, 10, 44, 9, 4, 3, 7, 54, 17 };
-    const input = Args{ .target = 17, .numbers = numbers[0..] };
-    const parsed = process_args(argv[1..]);
+    const input1 = Input{ .list = &[_]i32{ 10, 15, 3, 7 }, .target = 17, .result = true };
 
-    try std.testing.expectEqualDeep(input, parsed);
-}
+    const input2 = Input{ .list = &[_]i32{ 15, 3, 7 }, .target = 17, .result = false };
 
-test "find" {
-    var haystack = [_]i32{ 1, 7, 8, 10, 44, 9, 4, 3, 7, 54, 17 };
-    const input = Args{ .target = 17, .numbers = haystack[0..] };
-    const result = find(input.target, input.numbers, &std.testing.allocator);
+    const found1 = try check_list_for_sum(input1.list, input1.target, &allocator);
+    const found2 = try check_list_for_sum(input2.list, input2.target, &allocator);
 
-    try std.testing.expect(result != null);
-    try std.testing.expect(result.?.index_a == 1 and result.?.index_b == 3);
+    try std.testing.expect(found1 == input1.result);
+    try std.testing.expect(found2 == input2.result);
 }
