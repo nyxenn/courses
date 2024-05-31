@@ -22,3 +22,6 @@
 [submodule "backend/boot_dev/bookbot"]
 	path = backend/boot_dev/bookbot
 	url = https://github.com/nyxenn/bookbot
+[submodule "backend/boot_dev/ssg"]
+	path = backend/boot_dev/ssg
+	url = https://github.com/nyxenn/ssg
